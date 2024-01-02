@@ -1,13 +1,14 @@
-import apiErrorHandlerClass from "../error/errorHandler";
+const apiErrorHandlerClass = require("../error/errorHandler")
 
-export const getAllData = async (modelname, query = {}) => {
+const getAllData = async (modelname, query = {}, res) => {
     try {
-        if (query) {
-
-        }
-        let data = await modelName.find(query).sort({ createdAt: -1 });
+        console.log('called getAllData', query);
+        let data = await modelname.find(query).sort({ createdAt: -1 });
+        console.log('called getAllData lnn 7');
         return data;
     } catch (error) {
-        return apiErrorHandlerClass.InternalServerError(error?.message)
+        console.log(error, 'error called');
+        return next(apiErrorHandlerClass.InternalServerError(error?.message))
     }
 }
+module.exports = getAllData

@@ -8,17 +8,16 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const fileupload = require("express-fileupload");
 const notFound = require('./src/utils/route_not_Found');
-const apiErrorResponse = require('./src/error/errorHandler');
 var morgan = require('morgan');
-const { faker } = require('@faker-js/faker');
+// const { faker } = require('@faker-js/faker');
 const app = express();
-// const checkUserisAdmin = require('./src/middleware/admincheck')
 app.use(bodyParser.json());
 app.use(fileupload());
 const auth_route = require('./src/route/authRoute')
 const non_auth_route = require('./src/route/nonAuthRoute');
 const { verifyUserToken } = require('./src/middleware/requestValidator');
-const User = require('./src/model/User');
+const apiErrorHandler = require('./src/error/apiError');
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('combined',))
@@ -39,7 +38,8 @@ app.get('/life-check', (req, res) => {
 app.use('/apna-rent/v1', non_auth_route);
 // app.use('/apna-rent/v1', verifyUserToken, non_auth_route)
 
-app.use(apiErrorResponse);
+// app.use(apiErrorResponse);
+app.use(apiErrorHandler)
 app.use(notFound)
 // async function createRandomUsers(count = 10) {
 //     try {

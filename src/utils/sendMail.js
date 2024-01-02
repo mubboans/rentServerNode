@@ -1,4 +1,4 @@
-const Mailgen = require('mailgen');
+
 const nodemailer = require("nodemailer");
 let config = {
     service: 'gmail',
@@ -8,20 +8,13 @@ let config = {
     }
 }
 let transporter = nodemailer.createTransport(config);
-let mailGenerator = new Mailgen({
-    theme: "default", product: {
-        link: 'https://mailgen.js/',
-        name: 'Apna Rent', logo: "https://ucarecdn.com/3cd319fc-7bf7-4f2c-ac88-7e7766ca386d/apnarentlogo.jpg", logoHeight: '100px'
-    }
-});
-async function createMail(body, recieveremail, subject) {
-    let emailBody = mailGenerator.generate(body)
 
+async function createMail(body, recieveremail, subject) {
     let message = {
         from: process.env.MAIL,
         to: recieveremail,
         subject: subject,
-        html: emailBody
+        html: body
     }
     return transporter.sendMail(message).then(() => {
         console.log(config, 'tab data check');
