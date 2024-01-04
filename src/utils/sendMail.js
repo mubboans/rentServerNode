@@ -17,7 +17,7 @@ async function createMail(body, recieveremail, subject) {
         html: body
     }
     return transporter.sendMail(message).then(() => {
-        console.log(config, 'tab data check');
+        // console.log(config, 'tab data check');
         return true;
     }).catch((err) => {
         console.log(err, '60');

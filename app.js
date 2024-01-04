@@ -39,7 +39,8 @@ app.use('/apna-rent/v1', non_auth_route);
 // app.use('/apna-rent/v1', verifyUserToken, non_auth_route)
 
 // app.use(apiErrorResponse);
-app.use(apiErrorHandler)
+app.use(apiErrorHandler);
+console.log('running after the return');
 app.use(notFound)
 // async function createRandomUsers(count = 10) {
 //     try {

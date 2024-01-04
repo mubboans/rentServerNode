@@ -8,10 +8,11 @@ function apiErrorHandler(err, req, res, next) {
             error: err.error,
             status: err.status
         }
-        res.status(err.code).send(data)
+        return res.status(err.code).send(data);
+        // console.log('running after the return');
     }
     else {
-        res.status(500).send({ message: 'Something went wrong', success: false, status: 'Service unreachable' })
+        return res.status(500).send({ message: 'Something went wrong', success: false, status: 'Service unreachable' })
     }
 }
 module.exports = apiErrorHandler
