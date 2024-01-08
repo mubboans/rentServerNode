@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const apiErrorHandlerClass = require("../error/errorHandler");
 
 const createToken = ({ payload, expiration }) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -19,6 +20,30 @@ const isTokenValid = (token) => {
     return k;
 }
 
+const ValidateRequestWihToken = (req, res, next) => {
+    let token;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer")) {
+        token = authHeader.split(" ")[1];
+    }
+    console.log(token, 'bearer token');
+    if (!token) {
+        return next(apiErrorHandlerClass.Unauthorized("Please Provide Token"));
+    }
+    // try{ 
+    const head = isTokenValid(token);
+    if (head.user) {
+        next();
+    }
+    else {
+        return next(apiErrorHandlerClass.Unauthorized("Token is invalid"));
+    }
+    //     }
+    // catch(error){
+    //     return next(apiErrorHandlerClass.Unauthorized("Failed to authenticate"));
+
+    // }   
+}
 const attachedTokens = ({ user }) => {
     const onehalfDay = '6h';
     const longerExp = '30h';
@@ -37,5 +62,6 @@ module.exports = {
     createToken,
     createReferesh,
     attachedTokens,
-    isTokenValid
+    isTokenValid,
+    ValidateRequestWihToken
 }

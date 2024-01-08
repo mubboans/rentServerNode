@@ -1,12 +1,14 @@
 const apiErrorHandlerClass = require("../error/errorHandler");
 const returnResponse = require("../utils/returnResponse");
 const User = require('../model/User');
-
+const moment = require('moment');
 const createMailgenBody = require("../utils/createMailTemplate");
-const createMail = require("../utils/sendMail");
+
 const fnPost = require("../DBcomMethod/fnPost");
 const getAllData = require("../DBcomMethod/fnGetAll");
 const { attachedTokens } = require("../utils/jwt");
+const responseCookie = require("../utils/returnCookie");
+
 function checkPassword(first, second) {
     if (first == second) {
         return true;
@@ -19,6 +21,7 @@ const Login = async (req, res, next) => {
     try {
         let body = req.body;
         const UserObj = await getAllData(User, { email: body.email });
+        console.log(UserObj, 'UserObj');
         if (UserObj && UserObj.length > 0) {
             let user = UserObj[0];
             let checkPassworddb = checkPassword(body.password, user.password);
@@ -26,11 +29,13 @@ const Login = async (req, res, next) => {
                 return next(apiErrorHandlerClass.BadRequest('Authentication Failed'))
             }
             let data = attachedTokens({ user: user._id });
+            responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
             return returnResponse(res, 200, 'Login Success', { ...data, role: user.role })
         }
         return next(apiErrorHandlerClass.NotFound('Authentication Failed'));
     } catch (error) {
         console.log(error);
+
         return next(apiErrorHandlerClass.BadRequest('Please Try Again with valid credentials'));
     }
 }
@@ -56,14 +61,10 @@ const Register = async (req, res, next) => {
                 outro: [' We thank you for choosing us. Need help, or have questions?', 'Just reply to this email, we\'d love to help.'],
             },
         })
-        await createMail(mailbody, body.email, "Register Succesfully");
+        // await createMail(mailbody, body.email, "Register Succesfully");
         let data = attachedTokens({ user: createUser._id });
-
-        return returnResponse(res, 201, "Users Register succesfully", {
-            ...data,
-            role: createUser.role,
-        })
-        // }
+        responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
+        return returnResponse(res, 201, "Users Register succesfully", { ...data, role: createUser.role });
         // return next(apiErrorHandlerClass.InternalServerError(''))
     } catch (error) {
         console.log(error, 'when creating user');

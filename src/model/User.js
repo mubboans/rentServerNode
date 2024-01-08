@@ -60,4 +60,13 @@ const UserModel = new schema({
         default: false,
     },
 }, { timestamps: true })
+UserModel.virtual("age").get(function () {
+    const today = new Date();
+    const DOB = this.DOB;
+    let age = today.getFullYear() - DOB.getFullYear();
+    if (today.getMonth < DOB.getMonth || today.getMonth() == DOB.getMonth && today.getDate() < DOB.getDate()) {
+        age--;
+    }
+    return age;
+})
 module.exports = mongoose.model('Users', UserModel)

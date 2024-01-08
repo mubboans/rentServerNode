@@ -11,12 +11,12 @@ const notFound = require('./src/utils/route_not_Found');
 var morgan = require('morgan');
 // const { faker } = require('@faker-js/faker');
 const app = express();
-app.use(bodyParser.json());
-app.use(fileupload());
+
 const auth_route = require('./src/route/authRoute')
 const non_auth_route = require('./src/route/nonAuthRoute');
 const { verifyUserToken } = require('./src/middleware/requestValidator');
 const apiErrorHandler = require('./src/error/apiError');
+const { ValidateRequestWihToken } = require('./src/utils/jwt');
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,19 +24,23 @@ app.use(morgan('combined',))
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set("view engine", "ejs");
 const corsOptions = {
-    origin: '*',
+    origin: 'http://127.0.0.1:5173',
+    // origin: '*', // Change this to a specific origin if needed
     credentials: true,
     optionSuccessStatus: 200,
+    exposedHeaders: ['set-cookie'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}
+};
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+app.use(fileupload());
 app.get('/life-check', (req, res) => {
     // res.render('donation')
     res.status(200).send('Hello World!  From Mubashir');
 })
 app.use('/apna-rent/v1', non_auth_route);
-// app.use('/apna-rent/v1', verifyUserToken, non_auth_route)
+app.use('/apna-rent/v1', ValidateRequestWihToken, auth_route)
 
 // app.use(apiErrorResponse);
 app.use(apiErrorHandler);
