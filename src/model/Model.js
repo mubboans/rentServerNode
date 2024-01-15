@@ -10,6 +10,6 @@ const CreateModel = (ModelName, fieldObjs) => {
 }
 
 //  {
-module.exports = CreateModel
+module.exports = { CreateModel, schema }
 //     mongoose
 // }

@@ -1,4 +1,4 @@
-const CreateModel = require("./Model");
+const { CreateModel } = require("./Model");
 
 
 const Category = CreateModel("Category", {

@@ -10,7 +10,7 @@ const { TryCatch } = require("../utils/FunctionHelper");
 
 
 const getCategory = TryCatch(async (req, res, next) => {
-    const CategoryData = await fnGetAll(Category, req.query ||= {});
+    const CategoryData = await fnGetAll(Category, req.query, {});
     return returnResponse(res, 200, "Fetch All Category", CategoryData,);
 })
 

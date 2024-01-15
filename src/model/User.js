@@ -5,18 +5,17 @@ const schema = mongoose.Schema
 const UserModel = new schema({
     name: {
         type: String,
-        required: true,
         trim: true,
         // unique: true,
     },
     password: {
         type: String,
-        required: true,
+
         trim: true,
     },
     confirmpassword: {
         type: String,
-        required: true,
+
         trim: true,
     },
     email: {
@@ -44,8 +43,8 @@ const UserModel = new schema({
     },
     role: {
         type: String,
-        enum: ['owner', 'user', 'admin', 'rental'],
-        default: 'user'
+        enum: ['owner', 'user', 'admin', 'rental', 'tenant'],
+        default: 'owner'
     },
     isActive: {
         type: Boolean,
