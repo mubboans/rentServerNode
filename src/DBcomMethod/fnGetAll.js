@@ -1,3 +1,4 @@
+const CustomError = require("../error/customErrorClass");
 const apiErrorHandlerClass = require("../error/errorHandler")
 
 const fnGetAll = async (modelname, query = {}, populateObj = {}) => {
@@ -10,11 +11,10 @@ const fnGetAll = async (modelname, query = {}, populateObj = {}) => {
         else {
             data = await modelname.find(query).sort({ createdAt: -1 });
         }
-        // console.log('called getAllData lnn 7', modelname);
         return data;
     } catch (error) {
         // console.log(error, 'error called');
-        throw new apiErrorHandlerClass.InternalServerError(error)
+        throw new CustomError(error?.message, 500)
         // return next(apiErrorHandlerClass.InternalServerError(error?.message))
     }
 }

@@ -29,7 +29,7 @@ const updateCategory = TryCatch(async (req, res, next) => {
     return returnResponse(res, 200, "Updated Category");
 })
 const deleteCategory = TryCatch(async (req, res, next) => {
-    const deleteData = await fnDelete(Category, req.body);
+    const deleteData = await fnDelete(Category, req.query);
     return returnResponse(res, 200, "Deleted Category");
 })
 

@@ -1,3 +1,4 @@
+const CustomError = require("../error/customErrorClass");
 const apiErrorHandlerClass = require("../error/errorHandler")
 
 const fnUpdate = async (model, obj, id) => {
@@ -10,7 +11,7 @@ const fnUpdate = async (model, obj, id) => {
     }
     catch (e) {
         console.log(e, 'error check');
-        throw new apiErrorHandlerClass.BadRequest(e);
+        throw new CustomError(e, 400);
     }
 }
 module.exports = fnUpdate 

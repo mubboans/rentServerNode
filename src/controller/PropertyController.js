@@ -6,6 +6,7 @@ const Property = require('../model/Property');
 const fnUpdate = require("../DBcomMethod/fnUpdate");
 const fnDelete = require("../DBcomMethod/fnDelete");
 const { TryCatch } = require("../utils/FunctionHelper");
+const fnFindOneAndUpdate = require("../DBcomMethod/fnFindOneAndUpdate");
 
 
 const getProperty = TryCatch(async (req, res, next) => {
@@ -14,8 +15,9 @@ const getProperty = TryCatch(async (req, res, next) => {
 })
 
 const postProperty = TryCatch(async (req, res, next) => {
+    console.log('property hit');
     await fnPost(Property, req.body);
-    return returnResponse(res, 201, "Create New Property");
+    return returnResponse(res, 201, "Create New Property/House");
 })
 
 const updateProperty = TryCatch(async (req, res, next) => {
@@ -24,7 +26,7 @@ const updateProperty = TryCatch(async (req, res, next) => {
         return next(apiErrorHandlerClass.BadRequest('Id is required'));
     }
 
-    await fnUpdate(Property, req.body, { _id });
+    await fnFindOneAndUpdate(Property, _id, req.body);
     return returnResponse(res, 200, "Updated Property");
 })
 const deleteProperty = TryCatch(async (req, res, next) => {

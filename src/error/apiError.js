@@ -14,6 +14,7 @@ function apiErrorHandler(err, req, res, next) {
         // console.log('running after the return');
     }
     else if (err instanceof CustomError) {
+        console.log(err, 'err');
         return res.status(err.code).send({ error: err.message });
     }
     else {

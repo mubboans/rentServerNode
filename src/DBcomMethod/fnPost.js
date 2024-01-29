@@ -1,3 +1,4 @@
+const CustomError = require("../error/customErrorClass");
 const apiErrorHandlerClass = require("../error/errorHandler")
 
 const fnPost = async (model, obj) => {
@@ -8,7 +9,7 @@ const fnPost = async (model, obj) => {
     }
     catch (e) {
         console.log(e, 'error check');
-        throw new Error(e);
+        throw new CustomError(e?.message, 400);
     }
 }
 module.exports = fnPost 

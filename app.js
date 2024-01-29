@@ -24,8 +24,8 @@ app.use(morgan('combined',))
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set("view engine", "ejs");
 const corsOptions = {
-    origin: 'http://127.0.0.1:5173',
-    // origin: '*', // Change this to a specific origin if needed
+    // origin: 'http://127.0.0.1:5173',
+    origin: '*', // Change this to a specific origin if needed
     credentials: true,
     optionSuccessStatus: 200,
     exposedHeaders: ['set-cookie'],
