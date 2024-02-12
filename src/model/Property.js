@@ -1,8 +1,12 @@
-const { CreateModel } = require("./Model");
+const { CreateModel, schema } = require("./Model");
 
 
 
 const Property = CreateModel("Property", {
+    categoryDetail: {
+        type: schema.Types.ObjectId, ref: "Category",
+        required: true,
+    },
     housename: {
         type: String,
         required: [true, "house name Required"],
@@ -31,6 +35,10 @@ const Property = CreateModel("Property", {
     },
     remarks: {
         type: String,
+    },
+    createdBy: {
+        type: schema.Types.ObjectId, ref: "User",
+        required: [true, 'Created by Required'],
     }
 });
 module.exports = Property;

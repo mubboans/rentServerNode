@@ -5,7 +5,7 @@ const { CreateModel, schema } = require("./Model");
 const Payment = CreateModel("Payment", {
     houseid: {
         type: String,
-        required: [true, "house name Required"],
+        required: [true, "House id is required"],
         trim: true,
     },
     housedetail: {
@@ -28,6 +28,9 @@ const Payment = CreateModel("Payment", {
     },
     electricbillremark: {
         type: String,
+    },
+    createdBy: {
+        type: schema.Types.ObjectId, ref: "User",
     }
 });
 module.exports = Payment;

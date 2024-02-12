@@ -7,7 +7,7 @@ const TryCatch = (func) => {
             console.log(e);
             // apiErrorHandlerClass.BadRequest(e)
 
-            next(new CustomError(e.message, e.code));
+            next(new CustomError(e?.message, e?.code));
             // next(new Error(e?.message))
         });
     }

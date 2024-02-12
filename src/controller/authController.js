@@ -98,7 +98,6 @@ const RegisterTenant = TryCatch(async (req, res, next) => {
     let checkDetail = await TenantTokenValid(token);
     console.log(checkDetail, 'checkDetail');
     if (checkDetail.detail) {
-        log
         let _id = checkDetail.detail._id
         let data_check = await fnFindOne(User, _id);
         // res.send(data_check)

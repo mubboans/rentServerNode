@@ -1,7 +1,7 @@
 const CustomError = require("../error/customErrorClass");
 const apiErrorHandlerClass = require("../error/errorHandler")
 
-const fnGetAll = async (modelname, query = {}, populateObj = {}) => {
+const fnGetAll = async (modelname, query, populateObj = {}) => {
     try {
         console.log('called getAllData', query);
         let data;

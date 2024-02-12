@@ -9,6 +9,7 @@ const { TryCatch } = require("../utils/FunctionHelper");
 const createMailgenBody = require("../utils/createMailTemplate");
 const createMail = require("../utils/sendMail");
 const { CreateTenantToken } = require("../utils/jwt");
+const Tenant = require("../model/Tenenat");
 
 
 const getTenant = TryCatch(async (req, res, next) => {
@@ -23,8 +24,16 @@ const getTenant = TryCatch(async (req, res, next) => {
 const postTenant = TryCatch(async (req, res, next) => {
     let body = req.body;
     let { name } = req.query
-    const PostedData = await fnPost(User, { ...body, role: 'tenant', isActive: false });
-    let token = CreateTenantToken({ _id: PostedData._id, email: PostedData.email })
+    console.log(req.user, 'user check');
+    const PostTenantUser = await fnPost(User, { name: body.name, email: body.email, contact: body.contact, role: 'tenant', isActive: false });
+    const createTenatRecord = await fnPost(Tenant, {
+        userDetail: PostTenantUser._id,
+        houseDetail: body.houseDetail,
+        ouststanding_balance: body.ouststanding_balance,
+        createdBy: req.user,
+        otherdetail: body.otherdetail,
+    })
+    let token = CreateTenantToken({ _id: PostTenantUser._id, email: PostTenantUser.email })
     let mailbody = createMailgenBody({
         body: {
             // title: 'Welcome to ApnaRent!',
@@ -42,6 +51,7 @@ const postTenant = TryCatch(async (req, res, next) => {
             outro: [' We thank you for choosing us. Need help, or have questions?', 'Just reply to this email, we\'d love to help.'],
         },
     })
+
     await createMail(mailbody, body.email, "Membership Created");
     return returnResponse(res, 201, "Create New Tenant");
 })
