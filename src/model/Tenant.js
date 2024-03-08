@@ -4,8 +4,7 @@ const { CreateModel, schema } = require("./Model");
 
 const Tenant = CreateModel("Tenant", {
     userDetail: {
-        type: schema.Types.ObjectId, ref: "Users",
-
+        type: schema.Types.ObjectId, ref: "TenantUser",
     },
     houseDetail: {
         type: schema.Types.ObjectId, ref: "Property",

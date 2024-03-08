@@ -1,9 +1,9 @@
 const CustomError = require("../error/customErrorClass");
 const apiErrorHandlerClass = require("../error/errorHandler")
 
-const fnFindOne = async (modelname, id) => {
+const fnFindId = async (modelname, id) => {
     try {
-        let data = await modelname.findOne(id)
+        let data = await modelname.findById(id)
         return data;
     } catch (error) {
         console.log(error);
@@ -12,4 +12,4 @@ const fnFindOne = async (modelname, id) => {
         // return next(apiErrorHandlerClass.InternalServerError(error?.message))
     }
 }
-module.exports = fnFindOne
+module.exports = fnFindId

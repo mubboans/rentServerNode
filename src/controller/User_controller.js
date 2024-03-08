@@ -19,10 +19,31 @@ const getUserStatus = TryCatch(async (req, res, next) => {
     return returnResponse(res, 200, "Fetch User Status");
 })
 
-// const postUser = TryCatch(async (req, res, next) => {
-//     const PostedData = await fnPost(User, req.body);
-//     return returnResponse(res, 201, "Create New User");
-// })
+const postUser = TryCatch(async (req, res, next) => {
+    const PostedData = fnPost(User, req.body);
+    let { name } = req.query;
+    let token = CreateTenantToken({ _id: PostedData._id, email: PostedData.email })
+    let mailbody = createMailgenBody({
+        body: {
+            // title: 'Welcome to ApnaRent!',
+            title: `Welcome ${body.name} You Have Been Added As a Tenant By ${name}`,
+            name: body.name,
+            intro: ['Welcome to ApnaRent!', 'We\'re very excited to move forward with you.'],
+            action: {
+                instructions: 'Please Click Below Button To Configure Your Account',
+                button: {
+                    color: '#9DBC98',
+                    text: 'Confirm your account',
+                    link: `${process.env.FRONT_URL}/tenantsignup?token=${token}`
+                }
+            },
+            outro: [' We thank you for choosing us. Need help, or have questions?', 'Just reply to this email, we\'d love to help.'],
+        },
+    })
+
+    await createMail(mailbody, body.email, "Membership Created");
+    return returnResponse(res, 201, "Create New User");
+})
 
 const updateUser = TryCatch(async (req, res, next) => {
     let { _id } = req.query;
@@ -42,5 +63,6 @@ module.exports = {
     getUserDetail,
     getUserStatus,
     updateUser,
-    deleteUser
+    deleteUser,
+    postUser
 }

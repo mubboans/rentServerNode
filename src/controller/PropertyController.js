@@ -10,9 +10,17 @@ const fnFindOneAndUpdate = require("../DBcomMethod/fnFindOneAndUpdate");
 
 
 const getProperty = TryCatch(async (req, res, next) => {
-    let d = {
-        ...req.query,
-        createdBy: req.user
+    let d;
+    if (req.user.role == 'admin') {
+        d = {
+            ...req.query
+        }
+    }
+    else {
+        d = {
+            ...req.query,
+            createdBy: req.user.id
+        }
     }
     console.log(d, 'check d');
     const PropertyData = await fnGetAll(Property, d, { isPopulate: true, arr: ['categoryDetail',] });
@@ -21,7 +29,8 @@ const getProperty = TryCatch(async (req, res, next) => {
 
 const postProperty = TryCatch(async (req, res, next) => {
     console.log('property hit');
-    await fnPost(Property, { ...req.body, createdBy: req.user });
+    await fnPost(Property, { ...req.body, createdBy: req.user.id });
+
     return returnResponse(res, 201, "Create New Property/House");
 })
 

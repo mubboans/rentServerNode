@@ -61,10 +61,10 @@ const ValidateRequestWihToken = async (req, res, next) => {
 
     // }   
 }
-const attachedTokens = ({ user }) => {
+const attachedTokens = (user) => {
     const onehalfDay = '6h';
     const longerExp = '30h';
-
+    console.log(user, 'user to token');
     const accessTokenJWT = createToken({ payload: { user }, expiration: onehalfDay });
     const refreshTokenJWT = createReferesh({ payload: { user }, expiration: longerExp });
     let data = {

@@ -1,4 +1,5 @@
 const CustomError = require("../error/customErrorClass");
+const moment = require("moment")
 const apiErrorHandlerClass = require("../error/errorHandler");
 
 const TryCatch = (func) => {
@@ -13,6 +14,6 @@ const TryCatch = (func) => {
     }
 }
 const GetMomentCurrentDate = () => {
-    return moment().format('MMM Do YYYY, h:mm:ss a');
+    return moment().format('YYYY MM DD  h:mm:ss a');
 }
-module.exports = { TryCatch };
+module.exports = { TryCatch, GetMomentCurrentDate };

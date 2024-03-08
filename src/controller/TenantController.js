@@ -8,32 +8,79 @@ const fnDelete = require("../DBcomMethod/fnDelete");
 const { TryCatch } = require("../utils/FunctionHelper");
 const createMailgenBody = require("../utils/createMailTemplate");
 const createMail = require("../utils/sendMail");
-const { CreateTenantToken } = require("../utils/jwt");
-const Tenant = require("../model/Tenenat");
+const { CreateTenantToken, attachedTokens } = require("../utils/jwt");
+const Tenant = require("../model/Tenant");
+const TenantUser = require("../model/TenantUser");
+const fnFindOne = require("../DBcomMethod/fnFindOne");
 
 
 const getTenant = TryCatch(async (req, res, next) => {
-    where = {
-        ...req.query,
-        role: 'tenant',
+    let d;
+    if (req.user.role == 'admin') {
+        d = {
+            ...req.query,
+        }
     }
-    const TenantData = await fnGetAll(User, where, {});
+    else {
+        d = {
+            ...req.query,
+            createdBy: req.user.id,
+        }
+    }
+    console.log(d, 'where in tenant');
+    const TenantData = await fnGetAll(Tenant, d, { isPopulate: true, arr: ['userDetail', 'houseDetail'] });
     return returnResponse(res, 200, "Fetch All Tenant", TenantData);
 })
 
 const postTenant = TryCatch(async (req, res, next) => {
     let body = req.body;
-    let { name } = req.query
-    console.log(req.user, 'user check');
-    const PostTenantUser = await fnPost(User, { name: body.name, email: body.email, contact: body.contact, role: 'tenant', isActive: false });
     const createTenatRecord = await fnPost(Tenant, {
-        userDetail: PostTenantUser._id,
-        houseDetail: body.houseDetail,
-        ouststanding_balance: body.ouststanding_balance,
-        createdBy: req.user,
-        otherdetail: body.otherdetail,
+        ...body,
+        createdBy: req.user.id,
     })
-    let token = CreateTenantToken({ _id: PostTenantUser._id, email: PostTenantUser.email })
+
+    return returnResponse(res, 201, "Create New Tenant");
+})
+
+const updateTenant = TryCatch(async (req, res, next) => {
+    let { _id } = req.query;
+    if (!_id) {
+        return next(apiErrorHandlerClass.BadRequest('Id is required'));
+    }
+
+    const updateData = await fnUpdate(Tenant, req.body, { _id });
+    return returnResponse(res, 200, "Updated Tenant");
+})
+const deleteTenant = TryCatch(async (req, res, next) => {
+    const deleteData = await fnDelete(Tenant, req.body);
+    return returnResponse(res, 200, "Deleted Tenant");
+})
+
+
+const getTenantUser = TryCatch(async (req, res, next) => {
+
+    let d;
+    if (req.user.role == 'admin') {
+        d = {
+            ...req.query,
+        }
+    }
+    else {
+        d = {
+            ...req.query,
+            createdBy: req.user.id,
+        }
+    }
+    const UserData = await fnGetAll(TenantUser, d, {});
+    return returnResponse(res, 200, "Fetch Tenant User Detail", UserData,);
+})
+
+
+const postTenantUser = TryCatch(async (req, res, next) => {
+    let body = req.body;
+    let { name } = req.query;
+    const PostedData = fnPost(TenantUser, { ...req.body, createdBy: req.user.id });
+    let token = CreateTenantToken({ _id: PostedData._id, email: PostedData.email })
     let mailbody = createMailgenBody({
         body: {
             // title: 'Welcome to ApnaRent!',
@@ -53,26 +100,50 @@ const postTenant = TryCatch(async (req, res, next) => {
     })
 
     await createMail(mailbody, body.email, "Membership Created");
-    return returnResponse(res, 201, "Create New Tenant");
+    return returnResponse(res, 201, "Create New Tenant User");
 })
 
-const updateTenant = TryCatch(async (req, res, next) => {
+const updateTenantUser = TryCatch(async (req, res, next) => {
     let { _id } = req.query;
     if (!_id) {
         return next(apiErrorHandlerClass.BadRequest('Id is required'));
     }
 
-    const updateData = await fnUpdate(User, req.body, { _id });
-    return returnResponse(res, 200, "Updated Tenant");
+    const updateData = await fnUpdate(TenantUser, req.body, { _id });
+    return returnResponse(res, 200, "Updated Tenant User");
 })
-const deleteTenant = TryCatch(async (req, res, next) => {
-    const deleteData = await fnDelete(User, req.body);
-    return returnResponse(res, 200, "Deleted Tenant");
+const deleteTenantUser = TryCatch(async (req, res, next) => {
+    const deleteData = await fnDelete(TenantUser, req.query);
+    return returnResponse(res, 200, "Deleted Tenant User");
+})
+
+const TenantLogin = TryCatch(async (req, res, next) => {
+    let body = req.body;
+    let userdata = await fnFindOne(TenantUser, { email: body.email });
+    console.log(userdata, 'userdata');
+    if (userdata && userdata._id) {
+        if (!userdata.isActive) {
+            return next(apiErrorHandlerClass.Unauthorized('It seem your account is not active.'));
+        }
+        if (userdata.password !== body.password) {
+            return next(apiErrorHandlerClass.BadRequest('It seem your credential is wrong.'));
+        }
+        let data = attachedTokens({ id: userdata._id, role: userdata.role });
+        return returnResponse(res, 200, 'Login Success', { ...data, role: userdata.role, name: userdata.name })
+    }
+    else {
+        return next(apiErrorHandlerClass.NotFound("Can't found tenant with you credential"))
+    }
 })
 
 module.exports = {
     getTenant,
     postTenant,
     updateTenant,
-    deleteTenant
+    deleteTenant,
+    getTenantUser,
+    postTenantUser,
+    updateTenantUser,
+    deleteTenantUser,
+    TenantLogin
 }

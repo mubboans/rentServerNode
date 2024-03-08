@@ -3,9 +3,9 @@ const { CreateModel, schema } = require("./Model");
 
 
 const Payment = CreateModel("Payment", {
-    houseid: {
-        type: String,
-        required: [true, "House id is required"],
+    tenantdetail: {
+        type: schema.Types.ObjectId, ref: "TenantUser",
+        required: [true, "Tenant detail is required"],
         trim: true,
     },
     housedetail: {
@@ -24,9 +24,18 @@ const Payment = CreateModel("Payment", {
         type: String,
     },
     electricbill: {
-        type: Number,
+        type: String,
     },
     electricbillremark: {
+        type: String,
+    },
+    mode: {
+        type: String,
+    },
+    type: {
+        type: String,
+    },
+    collectedOn: {
         type: String,
     },
     createdBy: {

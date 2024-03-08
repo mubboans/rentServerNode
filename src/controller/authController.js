@@ -9,8 +9,9 @@ const getAllData = require("../DBcomMethod/fnGetAll");
 const { attachedTokens, TenantTokenValid } = require("../utils/jwt");
 const responseCookie = require("../utils/returnCookie");
 const { TryCatch } = require("../utils/FunctionHelper");
-const fnFindOne = require("../DBcomMethod/fnFindOne");
+const fnFindOne = require("../DBcomMethod/fnFindbyId");
 const fnUpdate = require("../DBcomMethod/fnUpdate");
+const { TenantLogin } = require("./TenantController");
 
 function checkPassword(first, second) {
     if (first == second) {
@@ -23,8 +24,11 @@ function checkPassword(first, second) {
 const Login = async (req, res, next) => {
     try {
         let body = req.body;
+        if (body.isTenant) {
+            return TenantLogin(req, res, next);
+        }
         const UserObj = await getAllData(User, { email: body.email });
-        console.log(UserObj, 'UserObj');
+        // console.log(UserObj, 'UserObj');
         if (UserObj && UserObj.length > 0) {
             let user = UserObj[0];
             let checkPassworddb = checkPassword(body.password, user.password);
@@ -34,9 +38,10 @@ const Login = async (req, res, next) => {
             if (!user.isActive) {
                 return next(apiErrorHandlerClass.NotFound('The Requested Account Has Been Dormant'))
             }
-            let data = attachedTokens({ user: user._id });
+            console.log(user, 'user check');
+            let data = attachedTokens({ id: user._id, role: user.role });
             responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
-            return returnResponse(res, 200, 'Login Success', { ...data, role: user.role })
+            return returnResponse(res, 200, 'Login Success', { ...data, role: user.role, name: user.name })
         }
         return next(apiErrorHandlerClass.NotFound('Authentication Failed'));
     } catch (error) {
@@ -68,8 +73,8 @@ const Register = async (req, res, next) => {
             },
         })
         await createMail(mailbody, body.email, "Register Succesfully");
-        let data = attachedTokens({ user: createUser._id });
-        responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
+        let data = attachedTokens({ user: createUser._id, role: createUser.role });
+        // responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
         return returnResponse(res, 201, "Users Register succesfully", { ...data, role: createUser.role });
         // return next(apiErrorHandlerClass.InternalServerError(''))
     } catch (error) {
