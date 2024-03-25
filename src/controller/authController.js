@@ -12,6 +12,7 @@ const { TryCatch } = require("../utils/FunctionHelper");
 const fnFindOne = require("../DBcomMethod/fnFindbyId");
 const fnUpdate = require("../DBcomMethod/fnUpdate");
 const { TenantLogin } = require("./TenantController");
+const createMail = require("../utils/sendMail");
 
 function checkPassword(first, second) {
     if (first == second) {
