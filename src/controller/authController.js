@@ -41,7 +41,7 @@ const Login = async (req, res, next) => {
             console.log(user, 'user check');
             let data = attachedTokens({ id: user._id, role: user.role });
             responseCookie(res, data.accessToken, moment().add(12, 'hours').toDate())
-            return returnResponse(res, 200, 'Login Success', { ...data, role: user.role, name: user.name })
+            return returnResponse(res, 200, 'Login Success', { ...data, role: user.role, name: user.name, id: user._id })
         }
         return next(apiErrorHandlerClass.NotFound('Authentication Failed'));
     } catch (error) {

@@ -50,7 +50,7 @@ const updateUser = TryCatch(async (req, res, next) => {
     if (!_id) {
         return next(apiErrorHandlerClass.BadRequest('Id is required'));
     }
-
+    delete req.body.role;
     const updateData = await fnUpdate(User, req.body, { _id });
     return returnResponse(res, 200, "Updated User");
 })

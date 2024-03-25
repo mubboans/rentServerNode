@@ -79,7 +79,7 @@ const getTenantUser = TryCatch(async (req, res, next) => {
 const postTenantUser = TryCatch(async (req, res, next) => {
     let body = req.body;
     let { name } = req.query;
-    const PostedData = fnPost(TenantUser, { ...req.body, createdBy: req.user.id });
+    const PostedData = await fnPost(TenantUser, { ...req.body, createdBy: req.user.id });
     let token = CreateTenantToken({ _id: PostedData._id, email: PostedData.email })
     let mailbody = createMailgenBody({
         body: {
