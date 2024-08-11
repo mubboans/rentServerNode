@@ -1,12 +1,13 @@
 const apiErrorHandlerClass = require("../error/errorHandler");
 const returnResponse = require("../utils/returnResponse");
 const fnPost = require("../DBcomMethod/fnPost");
-
 const fnGetAll = require("../DBcomMethod/fnGetAll");
 const User = require("../model/User");
 const fnUpdate = require("../DBcomMethod/fnUpdate");
+const createMailgenBody = require("../utils/createMailTemplate");
+const createMail = require("../utils/sendMail");
 const fnDelete = require("../DBcomMethod/fnDelete");
-const { TryCatch } = require("../utils/FunctionHelper");
+const { TryCatch, GetMomentCurrentDate } = require("../utils/FunctionHelper");
 
 
 const getUserDetail = TryCatch(async (req, res, next) => {
@@ -58,11 +59,28 @@ const deleteUser = TryCatch(async (req, res, next) => {
     const deleteData = await fnDelete(User, req.query);
     return returnResponse(res, 200, "Deleted User");
 })
+const sendMail = TryCatch(async (req, res, next) => {
+    let body = req.body;
+    let emailed = req?.query?.emailed ?? 'maenterprises.bz@gmail.com'
+    let date = GetMomentCurrentDate();
+    let mailbody = createMailgenBody({
+        body: {
+            title: `Form Submited ! ${body.firstName}-${body.lastName} on ${date}`,
+            name: `Following detail ${body.email}-${body.contact}`,
+            intro: [`Query register ${body.query}`],
+            outro: [' We thank you for choosing us.', 'Please reply in case of help your feedback matters'],
+        },
+    })
+    console.log(emailed, 'test the function')
+    await createMail(mailbody, emailed, "MA Enterprises contact form submit");
+    return returnResponse(res, 200, "Detail Send");
+})
 
 module.exports = {
     getUserDetail,
     getUserStatus,
     updateUser,
     deleteUser,
-    postUser
+    postUser,
+    sendMail
 }
