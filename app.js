@@ -7,16 +7,16 @@ const path = require('path');
 const cors = require("cors");
 const bodyParser = require('body-parser');
 const fileupload = require("express-fileupload");
-const notFound = require('./src/utils/route_not_Found');
 var morgan = require('morgan');
 // const { faker } = require('@faker-js/faker');
 const app = express();
 
 const auth_route = require('./src/route/authRoute')
 const non_auth_route = require('./src/route/nonAuthRoute');
-const { verifyUserToken } = require('./src/middleware/requestValidator');
+
 const apiErrorHandler = require('./src/error/apiError');
 const { ValidateRequestWihToken } = require('./src/utils/jwt');
+const route_not_Found = require('./src/utils/route_not_found');
 
 
 
@@ -46,7 +46,7 @@ app.use('/apna-rent/v1', ValidateRequestWihToken, auth_route)
 // app.use(apiErrorResponse);
 app.use(apiErrorHandler);
 console.log('running after the return');
-app.use(notFound)
+app.use(route_not_Found)
 // async function createRandomUsers(count = 10) {
 //     try {
 //         let userArr = [];

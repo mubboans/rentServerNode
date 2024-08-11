@@ -10,7 +10,7 @@ const fnPost = async (model, obj) => {
     }
     catch (e) {
         console.log(e, 'error check');
-        throw new CustomError(e, 400);
+        throw new CustomError(e?.message ? e?.message : "Error in creating record", 400);
     }
 }
 module.exports = fnPost 

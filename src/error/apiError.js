@@ -15,7 +15,7 @@ function apiErrorHandler(err, req, res, next) {
     }
     else if (err instanceof CustomError) {
         console.log(err, 'err');
-        return res.status(err.code).send({ error: err.message });
+        return res.status(err.code).send({ message: err.message, success: false, status: 'Failed' });
     }
     else {
         return res.status(500).send({ message: 'Something went wrong', success: false, status: 'Service unreachable' })
